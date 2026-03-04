@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:paymentdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  sql:
+    init:
+      mode: always
+
+gmopg:
+  site-id: ${GMOPG_SITE_ID:tsite00000000}
+  site-pass: ${GMOPG_SITE_PASS:tsitepass0000}
+  shop-id: ${GMOPG_SHOP_ID:tshop00000000}
+  shop-pass: ${GMOPG_SHOP_PASS:tshoppass0000}
+  api-base-url: https://pt01.mul-pay.jp/payment/
+  token-js-url: https://stg.static.mul-pay.jp/ext/js/token.js
+
+server:
+  port: 8080

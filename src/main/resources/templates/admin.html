@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('管理画面 - GMO-PG 決済デモ')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="container">
+    <h2 class="mb-4">管理画面 - トランザクション一覧</h2>
+
+    <!-- フラッシュメッセージ -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}">成功</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}">エラー</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${#lists.isEmpty(transactions)}" class="alert alert-info">
+        トランザクションはまだありません。
+    </div>
+
+    <div th:unless="${#lists.isEmpty(transactions)}" class="table-responsive">
+        <table class="table table-striped table-hover shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>注文ID</th>
+                    <th>商品名</th>
+                    <th>金額</th>
+                    <th>ステータス</th>
+                    <th>承認番号</th>
+                    <th>取引ID</th>
+                    <th>日時</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="tx : ${transactions}">
+                    <td th:text="${tx.id}">1</td>
+                    <td>
+                        <code th:text="${tx.orderId}" style="font-size: 0.8rem;">ORDER_ID</code>
+                    </td>
+                    <td th:text="${tx.product != null ? tx.product.name : '-'}">商品名</td>
+                    <td th:text="'¥' + ${#numbers.formatInteger(tx.amount, 1, 'COMMA')}">¥0</td>
+                    <td>
+                        <span class="badge status-badge"
+                              th:classappend="${tx.status.name() == 'AUTHORIZED'} ? 'bg-warning text-dark' :
+                                              (${tx.status.name() == 'CAPTURED'} ? 'bg-success' :
+                                              (${tx.status.name() == 'CANCELLED'} ? 'bg-secondary' : 'bg-danger'))"
+                              th:text="${tx.status}">STATUS</span>
+                    </td>
+                    <td th:text="${tx.approve ?: '-'}">-</td>
+                    <td>
+                        <code th:if="${tx.tranId}" th:text="${tx.tranId}" style="font-size: 0.8rem;">TRAN_ID</code>
+                        <span th:unless="${tx.tranId}">-</span>
+                    </td>
+                    <td th:text="${#temporals.format(tx.createdAt, 'yyyy/MM/dd HH:mm')}">2024/01/01 00:00</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <form th:if="${tx.status.name() == 'AUTHORIZED'}"
+                                  th:action="@{/admin/capture/{id}(id=${tx.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-success btn-sm"
+                                        onclick="return confirm('売上を確定しますか？')">売上確定</button>
+                            </form>
+                            <form th:if="${tx.status.name() == 'AUTHORIZED' or tx.status.name() == 'CAPTURED'}"
+                                  th:action="@{/admin/cancel/{id}(id=${tx.id})}" method="post" class="d-inline ms-1">
+                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('取消しますか？')">取消</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
