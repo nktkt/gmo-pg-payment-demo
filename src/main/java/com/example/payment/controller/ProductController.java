@@ -27,11 +27,13 @@ public class ProductController {
 
     @GetMapping("/checkout/{productId}")
     public String checkout(@PathVariable Long productId, Model model) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found: " + productId));
-        model.addAttribute("product", product);
-        model.addAttribute("shopId", gmoPgProperties.shopId());
-        model.addAttribute("tokenJsUrl", gmoPgProperties.tokenJsUrl());
-        return "checkout";
+        return productRepository.findById(productId)
+                .map(product -> {
+                    model.addAttribute("product", product);
+                    model.addAttribute("shopId", gmoPgProperties.shopId());
+                    model.addAttribute("tokenJsUrl", gmoPgProperties.tokenJsUrl());
+                    return "checkout";
+                })
+                .orElse("redirect:/");
     }
 }

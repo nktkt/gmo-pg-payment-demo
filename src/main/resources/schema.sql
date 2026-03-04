@@ -18,5 +18,6 @@ CREATE TABLE payment_transaction (
     approve VARCHAR(255),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    version BIGINT DEFAULT 0,
     FOREIGN KEY (product_id) REFERENCES product(id)
 );

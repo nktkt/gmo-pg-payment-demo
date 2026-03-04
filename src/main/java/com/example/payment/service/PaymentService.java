@@ -43,7 +43,7 @@ public class PaymentService {
         int amount = product.getPrice();
 
         PaymentTransaction transaction = new PaymentTransaction(
-                orderId, productId, amount, TransactionStatus.AUTHORIZED
+                orderId, product, amount, TransactionStatus.FAILED
         );
 
         try {

@@ -74,14 +74,14 @@ public class GmoPgApiClient {
         );
     }
 
-    public AlterTranResponse alterTran(String accessId, String accessPass, String jobCd, int amount) {
+    public AlterTranResponse alterTran(String accessId, String accessPass, String jobCd, Integer amount) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("ShopID", properties.shopId());
         params.add("ShopPass", properties.shopPass());
         params.add("AccessID", accessId);
         params.add("AccessPass", accessPass);
         params.add("JobCd", jobCd);
-        if (amount > 0) {
+        if (amount != null && !"VOID".equals(jobCd)) {
             params.add("Amount", String.valueOf(amount));
         }
 

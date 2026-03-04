@@ -13,8 +13,9 @@ public class PaymentTransaction {
     @Column(nullable = false, unique = true, length = 27)
     private String orderId;
 
-    @Column(nullable = false)
-    private Long productId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(nullable = false)
     private int amount;
@@ -35,25 +36,23 @@ public class PaymentTransaction {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "productId", insertable = false, updatable = false)
-    private Product product;
+    @Version
+    private Long version;
 
     protected PaymentTransaction() {
     }
 
-    public PaymentTransaction(String orderId, Long productId, int amount, TransactionStatus status) {
+    public PaymentTransaction(String orderId, Product product, int amount, TransactionStatus status) {
         this.orderId = orderId;
-        this.productId = productId;
+        this.product = product;
         this.amount = amount;
         this.status = status;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     public Long getId() { return id; }
     public String getOrderId() { return orderId; }
-    public Long getProductId() { return productId; }
+    public Long getProductId() { return product != null ? product.getId() : null; }
+    public Product getProduct() { return product; }
     public int getAmount() { return amount; }
     public String getAccessId() { return accessId; }
     public String getAccessPass() { return accessPass; }
@@ -62,14 +61,21 @@ public class PaymentTransaction {
     public String getApprove() { return approve; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public Product getProduct() { return product; }
 
     public void setAccessId(String accessId) { this.accessId = accessId; }
     public void setAccessPass(String accessPass) { this.accessPass = accessPass; }
-    public void setStatus(TransactionStatus status) {
-        this.status = status;
-        this.updatedAt = LocalDateTime.now();
-    }
+    public void setStatus(TransactionStatus status) { this.status = status; }
     public void setTranId(String tranId) { this.tranId = tranId; }
     public void setApprove(String approve) { this.approve = approve; }
+
+    @PrePersist
+    protected void onPrePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onPreUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

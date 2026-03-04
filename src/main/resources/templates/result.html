@@ -11,6 +11,11 @@
             <div th:if="${error}" class="alert alert-danger" role="alert">
                 <h5 class="alert-heading">決済エラー</h5>
                 <p th:text="${error}">エラーメッセージ</p>
+                <hr th:unless="${transaction}">
+                <div th:unless="${transaction}" class="d-flex gap-2">
+                    <a href="/" class="btn btn-outline-primary">商品一覧に戻る</a>
+                    <a href="/admin" class="btn btn-outline-secondary">管理画面へ</a>
+                </div>
             </div>
 
             <!-- 成功時の結果表示 -->
